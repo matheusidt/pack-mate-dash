@@ -8,23 +8,38 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Clonar o repositório
         uses: actions/checkout@v3
 
-      - name: Configurar Node.js 18
+      - name: Configurar Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      - name: Instalar dependências
-        run: npm install
+      - name: Instalar dependências (ignorar conflitos)
+        run: npm install --legacy-peer-deps
 
       - name: Build do projeto
         run: npm run build
 
-      - name: Mostrar arquivos gerados
-        run: ls -al dist/
+      - name: Detectar pasta de build
+        id: detect_build_dir
+        run: |
+          if [ -d "dist" ]; then
+            echo "BUILD_DIR=dist" >> $GITHUB_ENV
+          elif [ -d "build" ]; then
+            echo "BUILD_DIR=build" >> $GITHUB_ENV
+          elif [ -d ".next" ]; then
+            echo "BUILD_DIR=.next" >> $GITHUB_ENV
+          else
+            echo "Nenhuma pasta de build encontrada!"
+            exit 1
+          fi
+
+      - name: Mostrar arquivos da pasta de build
+        run: ls -al ${{ env.BUILD_DIR }}
 
       - name: Deploy FTP para Hostinger
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
@@ -33,7 +48,7 @@ jobs:
           port: 21
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASS }}
-          local-dir: dist/
+          local-dir: ${{ env.BUILD_DIR }}
           server-dir: /
           dangerous-clean-slate: true
           dry-run: false

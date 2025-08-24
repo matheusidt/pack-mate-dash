@@ -28,11 +28,11 @@ jobs:
         id: detect_build_dir
         run: |
           if [ -d "dist" ]; then
-            echo "BUILD_DIR=dist" >> $GITHUB_ENV
+            echo "BUILD_DIR=dist/" >> $GITHUB_ENV
           elif [ -d "build" ]; then
-            echo "BUILD_DIR=build" >> $GITHUB_ENV
+            echo "BUILD_DIR=build/" >> $GITHUB_ENV
           elif [ -d ".next" ]; then
-            echo "BUILD_DIR=.next" >> $GITHUB_ENV
+            echo "BUILD_DIR=.next/" >> $GITHUB_ENV
           else
             echo "Nenhuma pasta de build encontrada!"
             exit 1

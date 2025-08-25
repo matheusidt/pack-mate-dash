@@ -1,5 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useEffect } from "react";
 
 interface ChecklistAntilhas {
   id: number;
@@ -13,6 +14,30 @@ interface ChecklistAntilhas {
 }
 
 export function useChecklistData() {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const channel = supabase
+      .channel('checklist-antilhas-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'Checklist - Antilhas'
+        },
+        () => {
+          // Invalida e recarrega os dados quando há mudanças na tabela
+          queryClient.invalidateQueries({ queryKey: ["checklist-antilhas"] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
   return useQuery({
     queryKey: ["checklist-antilhas"],
     queryFn: async () => {
@@ -28,7 +53,7 @@ export function useChecklistData() {
 
       return data as ChecklistAntilhas[];
     },
-    refetchInterval: 30000, // Atualiza a cada 30 segundos para dados em tempo real
+    refetchInterval: 30000, // Backup: atualiza a cada 30 segundos
   });
 }
 

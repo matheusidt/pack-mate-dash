@@ -53,7 +53,12 @@ export function useChecklistData() {
 
       return data as ChecklistAntilhas[];
     },
-    refetchInterval: 30000, // Backup: atualiza a cada 30 segundos
+    staleTime: 0, // Sempre considerar dados como obsoletos para máxima atualização
+    gcTime: 1000 * 60 * 2, // 2 minutos de cache
+    refetchInterval: 5000, // Refetch a cada 5 segundos para garantir sincronização
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+    refetchIntervalInBackground: true, // Continua refetch mesmo em background
   });
 }
 

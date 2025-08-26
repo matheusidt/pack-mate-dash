@@ -3,6 +3,7 @@ import { MetricCard } from "@/components/dashboard/MetricCard";
 import { ComplianceChart } from "@/components/dashboard/ComplianceChart";
 import { MachineStatusChart } from "@/components/dashboard/MachineStatusChart";
 import { RecentChecklistsTable } from "@/components/dashboard/RecentChecklistsTable";
+import { ChecklistUpload } from "@/components/dashboard/ChecklistUpload";
 import { useChecklistMetrics } from "@/hooks/useChecklistData";
 import { 
   CheckSquare, 
@@ -57,6 +58,9 @@ const Index = () => {
             <span className="text-sm font-medium">Última atualização: agora</span>
           </div>
         </div>
+
+        {/* Upload de Dados */}
+        <ChecklistUpload />
 
         {/* Cards de Métricas */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
